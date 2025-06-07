@@ -4,6 +4,7 @@ from fastapi import status
 from ...db.connection import connection
 from ...db.schemas import CreateUser, DeleteUser
 from ...db.querys import createUsers, deleteUser
+from ...auth.security import createAccessToken
 
 
 router = APIRouter()
@@ -16,9 +17,17 @@ def create_user(newUser:CreateUser):# Gerar token para enviar via httpOnly para 
     response = createUsers(coon, newUser.name, newUser.email, newUser.phone, newUser.password, newUser.sex)
 
     if response:
+        data = {'name': newUser.name, 'email': newUser.email}
+        token = createAccessToken(data)
+
         return JSONResponse(
             status_code=status.HTTP_200_OK,
-            content={'menssage': 'Created User'}
+            content={'menssage': 'Created User', 'token': token}
+        )
+    else:
+        return JSONResponse(
+            status_code=status.HTTP_409_CONFLICT,
+            content={'menssage': 'Erro ao tentar cadastrar- Email já existente'}
         )
 
 
