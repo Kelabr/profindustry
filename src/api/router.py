@@ -1,6 +1,5 @@
 from fastapi import APIRouter
 from .endpoints import users, admin
-from ..db.connection import connection
 
 api_router = APIRouter()
 

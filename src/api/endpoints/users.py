@@ -12,7 +12,7 @@ coon = connection()
 
 
 @router.post('/create')
-def create_user(newUser:CreateUser):
+def create_user(newUser:CreateUser):# Gerar token para enviar via httpOnly para o front 
     response = createUsers(coon, newUser.name, newUser.email, newUser.phone, newUser.password, newUser.sex)
 
     if response:
