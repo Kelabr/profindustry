@@ -46,7 +46,12 @@ def updateUser(coon, data:dict):
             
             iduser = result[0]
 
-            cur.execute('UPDATE users SET name = COALESCE(%s, name), email = COALESCE(%s, email), phone = COALESCE(%s, phone), password = COALESCE(%s, password), sex = COALESCE(%s, sex) WHERE id=%s', (data['name'], data['email'], data['phone'], data['password'], data['sex'], iduser))
+
+            password_hash = bcrypt.hashpw(data['password'].encode('utf-8'), bcrypt.gensalt()).decode('utf-8')
+
+
+
+            cur.execute('UPDATE users SET name = COALESCE(%s, name), email = COALESCE(%s, email), phone = COALESCE(%s, phone), password = COALESCE(%s, password), sex = COALESCE(%s, sex) WHERE id=%s', (data['name'], data['email'], data['phone'], password_hash, data['sex'], iduser))
             coon.commit()
             return True
         
