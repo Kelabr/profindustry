@@ -2,8 +2,8 @@ from fastapi import APIRouter
 from fastapi.responses import JSONResponse
 from fastapi import status
 from ...db.connection import connection
-from ...db.schemas import CreateUser, DeleteUser
-from ...db.querys import createUsers, deleteUser, updateUser
+from ...db.schemas import CreateUser, DeleteUser, LoginUser
+from ...db.querys import createUsers, deleteUser, updateUser, loginUser
 from ...auth.security import createAccessToken
 
 
@@ -20,10 +20,25 @@ def create_user(newUser:CreateUser):# Gerar token para enviar via httpOnly para 
         data = {'name': newUser.name, 'email': newUser.email}
         token = createAccessToken(data)
 
-        return JSONResponse(
+
+        res = JSONResponse(
             status_code=status.HTTP_200_OK,
             content={'menssage': 'Created User', 'token': token}
         )
+
+        res.set_cookie(
+            key='access_token',
+            value=token,
+            httponly=True,
+            # secure=True,
+            samesite='lax',
+            max_age=3600,
+            path='/'
+        )
+
+        return res
+    
+
     else:
         return JSONResponse(
             status_code=status.HTTP_409_CONFLICT,
@@ -57,4 +72,37 @@ def update_user(dataUserUpdate:dict):
             content={'menssage': 'Erro ao atualizar '}
         )
     
+
+@router.post('/login')
+def login_user(dataUserLogin:LoginUser):
+    response = loginUser(coon, dataUserLogin.email, dataUserLogin.password)
+
+    if response:
+
+        token = createAccessToken(response)
+
+        res = JSONResponse(
+            status_code=status.HTTP_200_OK,
+            content={'menssage': 'Usuário logado', 'token': token}
+        )
+        
+        res.set_cookie(
+            key='access_token',
+            value=token,
+            httponly=True,
+            # secure=True,
+            samesite='lax',
+            max_age=3600,
+            path='/'
+        )
+
+        return res
+    else:
+        return JSONResponse(
+            status_code=status.HTTP_401_UNAUTHORIZED,
+            content={'menssage':'Erro ao fazer login'}
+        )
+    
+
+
     

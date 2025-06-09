@@ -60,6 +60,32 @@ def updateUser(coon, data:dict):
         coon.rollback()
 
         return None
+
+
+def loginUser(coon, email, password):
+    try:
+        with coon.cursor() as cur:
+
+            cur.execute('SELECT * FROM users WHERE email=%s', (email,))
+            result = cur.fetchone()
+
+            if not result:
+                print('Usuário não encontrado')
+                return None
+            
+            comppassword = bcrypt.checkpw(password.encode(), result[4].encode())
+
+            if not comppassword:
+                print('Senha incorreta')
+                return None
+            
+            return {'name':result[1], 'email':result[2]}
+        
+    except Exception as e:
+        print(f'Erro: {e}')
+        return None
+            
+
     
 
     
