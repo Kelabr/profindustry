@@ -13,3 +13,6 @@ class DeleteUser(BaseModel):
 class LoginUser(BaseModel):
     email:str
     password:str
+
+class ResponseUser(BaseModel):
+    menssage:str

@@ -2,9 +2,10 @@ from fastapi import APIRouter, Response
 from fastapi.responses import JSONResponse
 from fastapi import status
 from ...db.connection import connection
-from ...db.schemas import CreateUser, DeleteUser, LoginUser
+from ...db.schemas import CreateUser, DeleteUser, LoginUser, ResponseUser
 from ...db.querys import createUsers, deleteUser, updateUser, loginUser
-from ...auth.security import createAccessToken
+# from ...auth.security import createAccessToken
+from src.auth import createAccessToken
 
 
 router = APIRouter()
@@ -12,7 +13,7 @@ coon = connection()
 
 
 
-@router.post('/create')
+@router.post('/create', response_model=ResponseUser)
 def create_user(newUser:CreateUser):# Gerar token para enviar via httpOnly para o front 
     response = createUsers(coon, newUser.name, newUser.email, newUser.phone, newUser.password, newUser.sex)
 
@@ -46,7 +47,7 @@ def create_user(newUser:CreateUser):# Gerar token para enviar via httpOnly para 
         )
 
 
-@router.delete('/delete')
+@router.delete('/delete', response_model=ResponseUser)
 def delete_user(emailUser:DeleteUser): # Provavelmente vai ocorrer alteração -> 'email' não será pego pelo body mas sim pela token vindo pelo cookie
     response = deleteUser(coon, emailUser.email )
 
@@ -57,7 +58,7 @@ def delete_user(emailUser:DeleteUser): # Provavelmente vai ocorrer alteração -
         )
 
 
-@router.put('/update')
+@router.put('/update', response_model=ResponseUser)
 def update_user(dataUserUpdate:dict):
     response = updateUser(coon, dataUserUpdate)
 
@@ -73,7 +74,7 @@ def update_user(dataUserUpdate:dict):
         )
     
 
-@router.post('/login')
+@router.post('/login', response_model=ResponseUser)
 def login_user(dataUserLogin:LoginUser):
     response = loginUser(coon, dataUserLogin.email, dataUserLogin.password)
 
