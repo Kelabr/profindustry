@@ -1,4 +1,4 @@
-from fastapi import APIRouter
+from fastapi import APIRouter, Response
 from fastapi.responses import JSONResponse
 from fastapi import status
 from ...db.connection import connection
@@ -103,6 +103,12 @@ def login_user(dataUserLogin:LoginUser):
             content={'menssage':'Erro ao fazer login'}
         )
     
+
+@router.post('/logout')
+def logout_user(response:Response):
+    response.delete_cookie(key="access_token", httponly=True)
+    return{'menssage': 'Usuário deslogado'}
+
 
 
     
